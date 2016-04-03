@@ -5,6 +5,7 @@ from ..libs.constants import *
 from ..libs import user32
 from ctypes import c_wchar_p
 
+
 class Widget(CassowaryWidget):
     window_class = None
     default_style = WS_VISIBLE | WS_CHILD | WS_TABSTOP
@@ -13,7 +14,6 @@ class Widget(CassowaryWidget):
     def __init__(self, text=''):
         self.text = text
         super(Widget, self).__init__()
-
 
     @property
     def _width_hint(self):
@@ -29,10 +29,10 @@ class Widget(CassowaryWidget):
         text = c_wchar_p(text)
         style |= self.default_style
         style |= self.control_style
-        x, y, width, height = self.geometry
+        x, y, width, height = self._geometry
         parent = self.window._impl
         self._impl = user32.CreateWindowExW(0, window_class, text, style,
-            x, y, width, height,
+            int(x), int(y), int(width), int(height),
             parent, identifier, 0, 0)
 
     def startup(self):
@@ -67,7 +67,6 @@ class Widget(CassowaryWidget):
         user32.SetWindowPos(self._impl, HWND_TOP,
                   int(x), int(y), int(width), int(height),
                   0)
-
 
     def _on_wm_command(self, msg, wParam, lParam):
         "Called when a WM_COMMAND message is received referencing this widget."
