@@ -17,6 +17,7 @@ LPPOINT = POINTER(POINT)
 LPMSG = POINTER(MSG)
 UINT_PTR = HANDLE
 LONG_PTR = HANDLE
+ULONG_PTR = HANDLE
 
 LF_FACESIZE = 32
 CCHDEVICENAME = 32
@@ -291,3 +292,32 @@ class ICONINFO(Structure):
         ('hbmColor', HBITMAP)
     ]
     __slots__ = [f[0] for f in _fields_]
+
+class MENUINFO(Structure):
+    _fields_ = [
+        ('cbSize', DWORD),
+        ('fMask', DWORD),
+        ('dwStyle', DWORD),
+        ('cyMax', UINT),
+        ('hbrBack', HBRUSH),
+        ('dwContextHelpID', DWORD),
+        ('dwMenuData', ULONG_PTR),
+    ]
+
+class MENUITEMINFOW(Structure):
+    _fields_ = [
+        ('cbSize', UINT),
+        ('fMask', UINT),
+        ('fType', UINT),
+        ('fState', UINT),
+        ('wID', UINT),
+        ('hSubMenu', HMENU),
+        ('hbmpChecked', HBITMAP),
+        ('hbmpUnchecked', HBITMAP),
+        ('dwItemData', ULONG_PTR),
+        ('dwTypeData', LPWSTR),
+        ('cch', UINT),
+        ('hbmpItem', HBITMAP),
+    ]
+
+LPCMENUITEMINFOW = POINTER(MENUITEMINFOW)

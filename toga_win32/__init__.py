@@ -1,12 +1,12 @@
 # Core capabilities
 from .app import *
 from .window import *
-# from .command import *
+from .command import *
 
 # Widgets
 from .widgets.button import *
 from .widgets.container import *
-# from .widgets.icon import *
+from .widgets.icon import *
 from .widgets.label import *
 # from .widgets.dialog import *
 from .widgets.multilinetextinput import *
@@ -25,10 +25,11 @@ __all__ = [
     '__version__',
     'App',
     'Window',
-    # 'Command', 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
+    'Command',
+    # 'SEPARATOR', 'SPACER', 'EXPANDING_SPACER',
     'Button',
     'Container',
-    # 'Icon', 'TIBERIUS_ICON',
+    'Icon', 'TIBERIUS_ICON',
     'Label',
     # 'Dialog',
     'MultilineTextInput',

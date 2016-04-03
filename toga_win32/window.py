@@ -1,6 +1,9 @@
 from __future__ import print_function, absolute_import, division
 
-from .libs import *
+from .libs import (user32, kernel32, WM_CLOSE, WM_COMMAND, WM_SIZE, WM_GETMINMAXINFO, COLOR_WINDOW, WNDCLASS, WNDPROC,
+                   CS_VREDRAW, CS_HREDRAW, MAKEINTRESOURCE, WS_OVERLAPPEDWINDOW, byref, c_wchar_p, SW_SHOWDEFAULT,
+                   LOWORD, HIWORD, MINMAXINFO, MENUITEMINFOW, MIIM_BITMAP, MIIM_STRING)
+
 
 import ctypes
 
@@ -9,6 +12,7 @@ class Window(object):
     def __init__(self, position=(100, 100), size=(640, 480)):
         self._app = None
         self._allocated = 0
+        self._toolbar = None
         self._widgets = {}
         self.position = position
         self.size = size
@@ -106,7 +110,7 @@ class Window(object):
         return result
 
     def _wm_command(self, msg, wParam, lParam):
-        print("COMMAND RECEIVED", wParam)
+        print("COMMAND RECEIVED", wParam, lParam)
         try:
             widget = self._widgets[LOWORD(wParam)]
             widget._on_wm_command(msg, wParam, lParam)
@@ -153,3 +157,42 @@ class Window(object):
 
     def unregister_message_handler(self, message, handler):
         del self.message_handlers[message]
+
+    @property
+    def toolbar(self):
+        return self._toolbar
+
+    @toolbar.setter
+    def toolbar(self, toolbar):
+        self._toolbar = toolbar
+        if getattr(self, '_toolbar_impl', None):
+            _raise_if_fail(user32.DestroyMenu, self._toolbar_impl)
+        if self._toolbar:
+            self._toolbar_impl = user32.CreateMenu()
+            _raise_if_fail(user32.SetMenu, self._impl, self._toolbar_impl)
+            for uItem, item in enumerate(self._toolbar):
+                menu_item_impl = MENUITEMINFOW(
+                    ctypes.sizeof(MENUITEMINFOW),
+                    MIIM_STRING,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    0,
+                    item.toolbar_identifier,
+                    len(item.toolbar_identifier),
+                    0,
+                )
+                _raise_if_fail(user32.InsertMenuItemW,
+                               self._toolbar_impl,
+                               uItem,
+                               True,
+                               ctypes.pointer(menu_item_impl)
+                               )
+
+
+def _raise_if_fail(func, *args):
+    if not func(*args):
+        raise RuntimeError("%s failed with error: %s" % (repr(func), kernel32.GetLastError()))
